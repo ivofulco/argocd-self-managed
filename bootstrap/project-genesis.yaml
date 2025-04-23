@@ -1,0 +1,14 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: genesis
+  namespace: argocd
+spec:
+  roles:
+  # A role which provides admin access to all applications in the project
+  - name: admin
+    description: admin privileges to genesis
+    policies:
+    - p, proj:genesis:admin, repositories, create, genesis/*, allow
+    - p, proj:genesis:admin, repositories, delete, genesis/*, allow
+    - p, proj:genesis:admin, repositories, update, genesis/*, allow
