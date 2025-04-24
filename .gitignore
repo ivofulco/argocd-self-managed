@@ -3,7 +3,11 @@
 
 ### Terraform ###
 # Local .terraform directories
-**/.terraform/*
+.terraform
+terraform.tfstate
+secret-admin-password.txt
+
+.ignore
 
 # .tfstate files
 **/*.tfstate.*

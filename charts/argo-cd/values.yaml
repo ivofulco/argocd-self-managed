@@ -1,10 +1,16 @@
-argo-cd:
-  dex:
-    enabled: false
-  notifications:
-    enabled: false
-  applicationSet:
-    enabled: false
-  server:
-    extraArgs:
-      - --insecure
+controller:
+  replicas: 2
+  highAvailability: true
+  replicaStrategy: "RollingUpdate"
+
+server:
+  replicas: 2
+  highAvailability: true
+
+repoServer:
+  replicas: 2
+  highAvailability: true
+
+redis:
+  replicaCount: 2
+  highAvailability: true

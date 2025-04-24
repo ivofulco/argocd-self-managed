@@ -1,8 +1,0 @@
-kind: AppProject
-apiVersion: argoproj.io/v1alpha1
-metadata:
-  name: project-one
-  namespace: argocd
-spec:
-  sourceNamespaces:
-  - namespace-one

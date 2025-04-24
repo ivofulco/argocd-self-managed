@@ -1,0 +1,24 @@
+{{- if .Values.controller.highAvailability }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-controller
+  namespace: argocd
+  labels:
+    app: argocd
+spec:
+  replicas: {{ .Values.controller.replicas }}
+  strategy:
+    type: {{ .Values.controller.replicaStrategy }}
+  template:
+    metadata:
+      labels:
+        app: argocd
+    spec:
+      containers:
+        - name: controller
+          image: argoproj/argocd:v{{ .Chart.AppVersion }}
+          ports:
+            - containerPort: 8080
+            - containerPort: 8081
+{{- end }}

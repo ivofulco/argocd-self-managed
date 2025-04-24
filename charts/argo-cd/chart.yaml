@@ -1,7 +1,10 @@
 apiVersion: v2
 name: argo-cd
+description: A Helm chart for deploying ArgoCD
+type: application
 version: 1.0.0
+appVersion: "2.5.0"  # Change to the latest ArgoCD version if needed
 dependencies:
   - name: argo-cd
-    version: 5.46.8
-    repository: https://argoproj.github.io/argo-helm
+    version: ">=2.5.0"
+    repository: "https://argoproj.github.io/argo-helm"

@@ -1,17 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: crossplane
-  namespace: crossplane-system
+  name: argocd-addons
+  namespace: argocd
 spec:
   project: default
   source:
-    repoURL: https://github.com/crossplane/crossplane
+    repoURL: https://github.com/ivofulco/argocd-self-managed
     targetRevision: main
-    path: examples
+    path: addons
   destination:
     server: https://kubernetes.default.svc
-    namespace: crossplane-system
+    namespace: argocd
   syncPolicy:
     automated:
       prune: true
