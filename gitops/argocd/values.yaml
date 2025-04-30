@@ -2,17 +2,17 @@ redis-ha:
   enabled: true
 
 controller:
-  replicas: 6
+  replicas: 2
 
 server:
   autoscaling:
     enabled: true
-    minReplicas: 2
+    minReplicas: 1
 
 repoServer:
   autoscaling:
     enabled: true
-    minReplicas: 2
+    minReplicas: 1
 
 applicationSet:
-  replicas: 2
+  replicas: 1

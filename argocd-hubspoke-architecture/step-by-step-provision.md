@@ -35,19 +35,9 @@ helm repo add argo https://argoproj.github.io/argo-helm;
 helm repo update; 
 
 # instalar o argocd via helm com redundancia com alta disponibilidade
-helm install argocd argo/argo-cd \
+helm install argo argo/argo-cd \
   --create-namespace \
   --namespace argocd \
-  --set controller.replicas=1 \
-  --set server.replicas=1 \
-  --set repoServer.replicas=1 \
-  --set redis.replicaCount=1 \
-  --set controller.highAvailability=false \
-  --set server.highAvailability=false \
-  --set repoServer.highAvailability=false \
-  --set redis.highAvailability=false \
-  --set controller.replicaStrategy="RollingUpdate"
-
 
 # obter senha inicial do usuario admin
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d ;
@@ -71,10 +61,10 @@ kubectl port-forward svc/argocd-server -n argocd 8080:443
 cd ..
 
 # aplique o manifesto para o auto gerenciamento
-kubectl apply -f argocd-self-managed-app.yaml
+kubectl apply -f gitops/argocd-bootstrap.yaml
 
 # autentique com o cli
-argocd login localhost:54828
+argocd login localhost:55308
 
 # force a sincronia da aplicação
 argocd app sync argocd-self-management
