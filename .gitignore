@@ -5,13 +5,14 @@
 # Local .terraform directories
 .terraform
 terraform.tfstate
-secret-admin-password.txt
 
 .ignore
 
 # .tfstate files
 **/*.tfstate.*
 **/.terraform.lock.hcl
+
+argocd_secret_admin.txt
 
 # Crash log files
 crash.log

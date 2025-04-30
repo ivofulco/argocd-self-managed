@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana
+  namespace: argo-cd  # Este é o namespace onde o ArgoCD está instalado
+spec:
+  project: default
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: grafana
+    targetRevision: 9.0.0
+    helm:
+      releaseName: grafana
+      values: |
+        adminUser: admin
+        adminPassword: prom-operator
+        persistence:
+          enabled: true
+          size: 2Gi
+        service:
+          type: ClusterIP
+        datasources:
+          datasources.yaml:
+            apiVersion: 1
+            datasources:
+              - name: Prometheus
+                type: prometheus
+                access: proxy
+                url: http://prometheus-server.default.svc.cluster.local
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: grafana
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
