@@ -24,7 +24,6 @@
 
 ---
 
-
 # Passo a passo
 
 1. Implementar o ArgoCD via Helm ( mesmo fluxo com Terraform) em um cluster novo sem CRD's do ArgoCD (*importante pois pode impactar a instalação*)
@@ -39,14 +38,14 @@ helm repo update;
 helm install argocd argo/argo-cd \
   --create-namespace \
   --namespace argocd \
-  --set controller.replicas=2 \
-  --set server.replicas=2 \
-  --set repoServer.replicas=2 \
-  --set redis.replicaCount=2 \
-  --set controller.highAvailability=true \
-  --set server.highAvailability=true \
-  --set repoServer.highAvailability=true \
-  --set redis.highAvailability=true \
+  --set controller.replicas=1 \
+  --set server.replicas=1 \
+  --set repoServer.replicas=1 \
+  --set redis.replicaCount=1 \
+  --set controller.highAvailability=false \
+  --set server.highAvailability=false \
+  --set repoServer.highAvailability=false \
+  --set redis.highAvailability=false \
   --set controller.replicaStrategy="RollingUpdate"
 
 
@@ -62,8 +61,6 @@ kubectl get svc argocd-server-lb -n argocd
 
 #faça o direcionamento de porta
 kubectl port-forward svc/argocd-server -n argocd 8080:443
-
-
 ```
 
 2. Crie uma aplicação para conciliar o argocd e aplicar o auto gerenciamento, como o exemplo:
@@ -76,6 +73,9 @@ cd ..
 # aplique o manifesto para o auto gerenciamento
 kubectl apply -f argocd-self-managed-app.yaml
 
+# autentique com o cli
+argocd login localhost:54828
+
 # force a sincronia da aplicação
-argocd app sync argocd-self-managed
+argocd app sync argocd-self-management
 ```
