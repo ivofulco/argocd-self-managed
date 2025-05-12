@@ -1,0 +1,10 @@
+{
+    "source": {
+        "repoURL": "https://grafana.github.io/helm-charts",
+        "chart": "grafana",
+        "targetRevision": "9.0.0"
+    },
+    "destination": {
+        "namespace": "grafana"
+    }
+}

@@ -1,0 +1,79 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: acesso-total
+  namespace: argocd  # ou o namespace onde o Argo CD está instalado
+spec:
+  description: Projeto de admin para agrupar aplicações
+
+  sourceRepos:
+    - '*'
+    # Ou restrinja para um repositório específico:
+    # - 'https://github.com/seu-org/seu-repo.git'
+
+  destinations:
+    - namespace: '*'
+      server: '*'
+    # Ou restrinja, por exemplo:
+    # - namespace: default
+    #   server: https://kubernetes.default.svc
+
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+
+  roles:
+    - name: admin
+      description: Acesso total
+      policies:
+        - p, proj:acesso-total:admin, applications, *, acesso-total/*, allow
+
+  # Se você quiser forçar que só aplicações com um nome de cluster específico sejam permitidas:
+  # syncWindows:
+  #   - kind: allow
+  #     schedule: "Mon-Fri 09:00-17:00"
+  #     duration: 1h
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: somente-leitura
+  namespace: argocd  # ou o namespace onde o Argo CD está instalado
+spec:
+  description: Projeto de somente leitura para agrupar aplicações
+
+  sourceRepos:
+    - '*'
+    # Ou restrinja para um repositório específico:
+    # - 'https://github.com/seu-org/seu-repo.git'
+
+  destinations:
+    - namespace: '*'
+      server: '*'
+    # Ou restrinja, por exemplo:
+    # - namespace: default
+    #   server: https://kubernetes.default.svc
+
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+
+  roles:
+    - name: read-only
+      description: Permissão de leitura
+      policies:
+        - p, proj:somente-leitura:read-only, applications, get, somente-leitura/*, deny
+
+  # Se você quiser forçar que só aplicações com um nome de cluster específico sejam permitidas:
+  # syncWindows:
+  #   - kind: allow
+  #     schedule: "Mon-Fri 09:00-17:00"
+  #     duration: 1h

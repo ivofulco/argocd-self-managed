@@ -1,0 +1,91 @@
+fullnameOverride: "cert-manager"
+cainjector:
+  extraArgs:
+  - --logging-format=json
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+  replicaCount: 2
+  resources:
+    limits:
+      cpu: "1"
+      memory: 3Gi
+    requests:
+      cpu: 100m
+      memory: 1Gi
+  topologySpreadConstraints:
+  - labelSelector:
+      matchLabels:
+        app.kubernetes.io/component: cainjector
+        app.kubernetes.io/instance: cert-manager
+    maxSkew: 2
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: ScheduleAnyway
+  - labelSelector:
+      matchLabels:
+        app.kubernetes.io/component: cainjector
+        app.kubernetes.io/instance: cert-manager
+    maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: ScheduleAnyway
+crds:
+  enabled: true
+extraArgs:
+- --logging-format=json
+global:
+  priorityClassName: cert-manager-high-priority
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+replicaCount: 2
+resources:
+  limits:
+    cpu: "1"
+    memory: 3Gi
+  requests:
+    cpu: 100m
+    memory: 1Gi
+topologySpreadConstraints:
+- labelSelector:
+    matchLabels:
+      app.kubernetes.io/component: controller
+      app.kubernetes.io/instance: cert-manager
+  maxSkew: 2
+  topologyKey: topology.kubernetes.io/zone
+  whenUnsatisfiable: ScheduleAnyway
+- labelSelector:
+    matchLabels:
+      app.kubernetes.io/component: controller
+      app.kubernetes.io/instance: cert-manager
+  maxSkew: 1
+  topologyKey: kubernetes.io/hostname
+  whenUnsatisfiable: ScheduleAnyway
+webhook:
+  extraArgs:
+  - --logging-format=json
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+  replicaCount: 3
+  resources:
+    limits:
+      cpu: "1"
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  topologySpreadConstraints:
+  - labelSelector:
+      matchLabels:
+        app.kubernetes.io/component: webhook
+        app.kubernetes.io/instance: cert-manager
+    maxSkew: 2
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: ScheduleAnyway
+  - labelSelector:
+      matchLabels:
+        app.kubernetes.io/component: webhook
+        app.kubernetes.io/instance: cert-manager
+    maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: ScheduleAnyway

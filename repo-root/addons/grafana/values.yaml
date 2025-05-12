@@ -1,0 +1,29 @@
+replicaCount: 1
+
+image:
+  repository: grafana/grafana
+  tag: "10.0.0"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources: {}
+
+persistence:
+  enabled: true
+  storageClassName: "standard"
+  accessModes:
+    - ReadWriteOnce
+  size: 1Gi
+
+adminUser: admin
+adminPassword: admin
+
+config:
+  grafana_ini:
+    server:
+      root_url: "%(protocol)s://%(domain)s/"
+    auth:
+      disable_login_form: false

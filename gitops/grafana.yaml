@@ -1,0 +1,21 @@
+# Application.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana
+  namespace: argocd
+spec:
+  project: default
+  destination:
+    namespace: grafana
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: https://github.com/ivofulco/argocd-self-managed
+    targetRevision: main
+    path: gitops/grafana
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

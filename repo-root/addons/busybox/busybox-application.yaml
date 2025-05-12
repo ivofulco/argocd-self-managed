@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: busybox
+  namespace: argocd  # ou o namespace do Argo CD
+spec:
+  project: default
+
+  source:
+    repoURL: 'https://github.com/ivofulco/argocd-self-managed.git'
+    targetRevision: HEAD
+    path: repo-root/addons/busybox
+
+    helm:
+      valueFiles:
+        - values.yaml
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: busybox
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

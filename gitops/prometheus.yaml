@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus
+  namespace: argocd
+spec:
+  project: default
+  destination:
+    namespace: prometheus
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: https://github.com/ivofulco/argocd-self-managed
+    targetRevision: main
+    path: gitops/prometheus
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

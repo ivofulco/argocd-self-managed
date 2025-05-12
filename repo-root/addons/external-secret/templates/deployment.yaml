@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "external-secrets.fullname" . }}
+  labels:
+    app: {{ include "external-secrets.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "external-secrets.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "external-secrets.name" . }}
+    spec:
+      containers:
+        - name: external-secrets
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - "--log-level=info"
+          ports:
+            - containerPort: 8080

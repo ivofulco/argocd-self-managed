@@ -1,0 +1,15 @@
+adminUser: admin
+adminPassword: prom-operator
+persistence:
+  enabled: true
+  size: 2Gi
+service:
+  type: ClusterIP
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus-server.default.svc.cluster.local
