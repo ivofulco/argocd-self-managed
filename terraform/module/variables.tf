@@ -18,8 +18,3 @@ variable "argocd_application_bootstrap_manifest_name" {
   type        = string
   description = "Nome do manifesto que aplicará o yaml do bootstrap do argocd"
 }
-variable "release_name" {
-  type        = string
-  default     = "argocd"
-  description = "Nome do release Helm do ArgoCD"
-}

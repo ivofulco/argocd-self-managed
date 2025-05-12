@@ -2,7 +2,19 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-#- argo-rollouts
 - argo-cd
 - grafana
-- prometheus
+# - prometheus
+#- argo-rollouts
+#- keda
+#- istio
+#- velero
+#- popeye
+#- kubecost
+#- cert-manager
+#- lets-encrypt
+#- external-secrets
+#- graylog
+#- kiali
+#- kyverno
+#- falco

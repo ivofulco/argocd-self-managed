@@ -3,6 +3,12 @@ kind: Application
 metadata:
   name: grafana
   namespace: argo-cd  # Este é o namespace onde o ArgoCD está instalado
+  finalizers:
+    # The default behavior is foreground cascading deletion
+    - resources-finalizer.argocd.argoproj.io
+  annotations:
+    argocd.argoproj.io/refresh: hard
+    argocd.argoproj.io/secret-type: argocd-bitbucket-server-token
 spec:
   project: default
   source:
@@ -35,4 +41,4 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-      - CreateNamespace=true
+      - PrunePropagationPolicy=orphan
