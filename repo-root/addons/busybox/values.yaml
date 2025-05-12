@@ -1,0 +1,12 @@
+replicaCount: 8
+
+image:
+  repository: busybox
+  tag: latest
+  pullPolicy: IfNotPresent
+
+command:
+  - sleep
+  - "3600"
+
+resources: {}

@@ -1,0 +1,43 @@
+# Versão da API do recurso ApplicationSet (parte do ArgoCD ApplicationSet controller)
+apiVersion: argoproj.io/v1alpha1
+
+# Tipo de recurso sendo criado
+kind: ApplicationSet
+
+# Metadados básicos do recurso
+metadata:
+  name: addons-applicationset          # Nome do ApplicationSet
+  namespace: argocd                    # Namespace onde o ArgoCD está instalado
+
+spec:
+  # Define como as aplicações serão geradas
+  generators:
+    - git:
+        repoURL: https://github.com/ivofulco/argocd-self-managed.git  # Repositório Git onde os manifests estão
+        revision: HEAD                                                # Revisão Git (HEAD = última commit da branch atual)
+        directories:
+          - path: repo-root/addons/*  # Gera uma aplicação para cada diretório dentro de repo-root/addons/
+
+  # Define o template-base para cada aplicação gerada
+  template:
+    metadata:
+      name: '{{path.basename}}'       # Nome da aplicação será o nome do diretório (ex: se path for "addons/prometheus", nome será "prometheus")
+
+    spec:
+      project: default                # Projeto ArgoCD onde a aplicação será registrada (padrão: default)
+
+      source:                         # Fonte de onde os manifests serão obtidos
+        repoURL: https://github.com/ivofulco/argocd-self-managed.git  # Mesmo repositório Git
+        targetRevision: HEAD          # Mesmo commit
+        path: '{{path}}'              # Caminho será dinâmico (ex: "repo-root/addons/prometheus")
+
+      destination:                    # Onde a aplicação será implantada no cluster Kubernetes
+        server: https://kubernetes.default.svc   # Cluster atual (endereço padrão do Kubernetes interno)
+        namespace: monitoring         # Todas as aplicações serão implantadas neste namespace
+
+      syncPolicy:                     # Política de sincronização automática
+        automated:
+          prune: true                # Remove recursos que não existem mais no Git
+          selfHeal: true             # Corrige divergências entre Git e cluster
+        syncOptions:
+          - CreateNamespace=true     # Cria automaticamente o namespace "monitoring" se não existir

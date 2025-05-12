@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "busybox-chart.fullname" . }}
+  labels:
+    app: {{ include "busybox-chart.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "busybox-chart.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "busybox-chart.name" . }}
+    spec:
+      containers:
+        - name: busybox
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: {{ toJson .Values.command }}
+          resources: {{- toYaml .Values.resources | nindent 12 }}

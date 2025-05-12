@@ -1,0 +1,27 @@
+replicaCount: 1
+
+image:
+  repository: prom/prometheus
+  tag: "v2.52.0"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources: {}
+
+persistence:
+  enabled: true
+  storageClassName: "standard"
+  accessModes:
+    - ReadWriteOnce
+  size: 2Gi
+
+config:
+  global:
+    scrape_interval: 15s
+  scrape_configs:
+    - job_name: 'prometheus'
+      static_configs:
+        - targets: ['localhost:9090']

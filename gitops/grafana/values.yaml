@@ -1,0 +1,6 @@
+# values.yaml
+adminPassword: supersecure
+ingress:
+  enabled: true
+  hosts:
+    - grafana.example.com

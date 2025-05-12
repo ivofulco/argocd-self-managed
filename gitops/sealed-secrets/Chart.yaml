@@ -1,0 +1,8 @@
+apiVersion: v2
+name: sealed-secrets-wrapper
+description: Wrapper chart para o Sealed Secrets da Bitnami
+version: 0.1.0
+dependencies:
+  - name: sealed-secrets
+    version: 2.17.2
+    repository: https://bitnami-labs.github.io/sealed-secrets
