@@ -1,5 +1,4 @@
 fullnameOverride: "cert-manager"
-installCRDs: true
 cainjector:
   extraArgs:
   - --logging-format=json

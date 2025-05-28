@@ -36,3 +36,12 @@ resource "null_resource" "apply_manifests" {
      EOT
   }
 }
+
+resource "null_resource" "apply_manifests_addons" {
+  depends_on = [null_resource.apply_manifests]
+  provisioner "local-exec" {
+    command = <<-EOT
+         kubectl apply -f appset-argocd-addons-matrix.yaml --namespace ${var.namespace}
+     EOT
+  }
+}
