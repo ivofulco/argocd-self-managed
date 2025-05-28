@@ -1,0 +1,23 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: istio-ca
+  namespace: istio-system
+spec:
+  isCA: true
+  duration: 720h #30d
+  renewBefore: 360h #15d
+  secretName: cacerts
+  commonName: istiod.istio-system.svc
+  dnsNames:
+    - istiod.istio-system.svc
+  subject:
+    organizations:
+    - cluster.local
+    - cert-manager
+  issuerRef:
+# ---------------- Issuer for Istio CA ---------------------------
+    group: awspca.cert-manager.io
+    kind: AWSPCAClusterIssuer
+    name: root-pca-issuer
+# ---------------- Issuer for Istio CA ---------------------------

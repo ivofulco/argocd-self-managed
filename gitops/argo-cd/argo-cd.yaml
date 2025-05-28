@@ -3,6 +3,12 @@ kind: Application
 metadata:
   name: argo-cd
   namespace: argocd
+  labels:
+    app.kubernetes.io/name: genesis-bootstrap
+    app.kubernetes.io/instance: genesis-bootstrap
+    app.kubernetes.io/managed-by: argocd
+    app.kubernetes.io/part-of: bootstrap-system
+    app.kubernetes.io/component: argo-application
 spec:
   ignoreDifferences:
   - group: apps

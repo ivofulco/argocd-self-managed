@@ -1,0 +1,201 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  name: istio-operator-csr
+  namespace: istio-system  
+spec:
+  profile: ambient
+  hub: 840472296963.dkr.ecr.sa-east-1.amazonaws.com/docker-hub/istio
+  values:
+    global:
+      proxy:
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 300m
+            memory: 256Mi
+    sidecarInjectorWebhook:
+      rewriteAppHTTPProbe: false
+    pilot:
+      env:
+        ISTIO_MULTIROOT_MESH: "true"
+        PILOT_ENABLE_SENDING_HBONE: "true"
+        PILOT_ENABLE_SIDECAR_LISTENING_HBONE: "true"
+        PILOT_PREFER_SENDING_HBONE: "true"
+  meshConfig:
+    extensionProviders:
+      - name: envoy-json
+        envoyFileAccessLog:
+          path: "/dev/stdout"
+          logFormat:
+            labels:
+              requestHeaders: "%DYNAMIC_METADATA(envoy.lua:request_headers)%"
+              requestBody: "%DYNAMIC_METADATA(envoy.lua:request_body)%"
+              responseHeaders: "%DYNAMIC_METADATA(envoy.lua:response_headers)%"
+              responseBody: "%DYNAMIC_METADATA(envoy.lua:response_body)%"
+              timestamp: "%START_TIME%"
+              protocol: "%PROTOCOL%"
+              method: "%REQ(:METHOD)%"
+              path: "%REQ(X-ENVOY-ORIGINAL-PATH?:PATH)%"
+              responseCode: "%RESPONSE_CODE%"
+              clientDuration: "%DURATION%"
+              responseCodeDetails: "%RESPONSE_CODE_DETAILS%"
+              connectionTerminationDetails: "%CONNECTION_TERMINATION_DETAILS%"
+              targetDuration: "%RESPONSE_DURATION%"
+              upstreamName: "%UPSTREAM_CLUSTER%"
+              traceId: "%REQ(X-B3-Traceid)%"
+              responseFlags: "%RESPONSE_FLAGS%"
+              routeName: "%ROUTE_NAME%"
+              downstreamRemoteAddress: "%DOWNSTREAM_REMOTE_ADDRESS%"
+              upstreamHost: "%UPSTREAM_HOST%"
+              downstreamLocalURISan: "%DOWNSTREAM_LOCAL_URI_SAN%"
+              upstreamTransportFailureReason: "%UPSTREAM_TRANSPORT_FAILURE_REASON%"
+              bytesReceived: "%BYTES_RECEIVED%"
+              bytesSend: "%BYTES_SENT%"
+              upstreamServiceTime: "%RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)%"
+              xForwardedFor: "%REQ(X-FORWARDED-FOR)%"
+              userAgent: "%REQ(USER-AGENT)%"
+              xRequestId: "%REQ(X-REQUEST-ID)%"
+              authority: "%REQ(:AUTHORITY)%"
+              upstreamLocalAddress: "%UPSTREAM_LOCAL_ADDRESS%"
+              downstreamLocalAddress: "%DOWNSTREAM_LOCAL_ADDRESS%"
+              requestedServerName: "%REQUESTED_SERVER_NAME%"
+    enableTracing: false
+    defaultConfig:
+      holdApplicationUntilProxyStarts: true
+      proxyMetadata:
+        WORKLOAD_RSA_KEY_SIZE: "4096"
+        SECRET_TTL: 24h
+        PROXY_CONFIG_XDS_AGENT: "true"
+        PILOT_ENABLE_SENDING_HBONE: "true"
+        PILOT_ENABLE_SIDECAR_LISTENING_HBONE: "true"
+        PILOT_PREFER_SENDING_HBONE: "true"
+      tracing: {}
+    caCertificates:
+      - pem: |-
+          -----BEGIN CERTIFICATE-----
+          MIIFQzCCAyugAwIBAgIUPCcPN4X3aJQfCD7ACptlmOE3eikwDQYJKoZIhvcNAQEL
+          ...
+          -----END CERTIFICATE-----
+      - pem: |-
+          -----BEGIN CERTIFICATE-----
+          MIIFeTCCA2GgAwIBAgIRAON8jscVtCUmhuZchgQ+RJwwDQYJKoZIhvcNAQENBQAw
+          ...
+          -----END CERTIFICATE-----
+  components:
+    base:
+      enabled: true
+    pilot:
+      k8s:
+        priorityClassName: istio-priority
+        securityContext:
+          runAsNonRoot: true
+        resources:
+          limits:
+            cpu: "1"
+            memory: "3Gi"
+        hpaSpec:
+          minReplicas: 2
+          maxReplicas: 7
+          metrics:
+            - type: Resource
+              resource:
+                name: cpu
+                target:
+                  averageUtilization: 80
+                  type: Utilization
+        env:
+          - name: WORKLOAD_RSA_KEY_SIZE
+            value: "4096"
+          - name: AUTO_RELOAD_PLUGIN_CERTS
+            value: "true"
+    ingressGateways:
+      - enabled: true
+        k8s:
+          priorityClassName: istio-priority
+          nodeSelector:
+            app: ingress-node
+          securityContext:
+            runAsNonRoot: true
+          hpaSpec:
+            minReplicas: 2
+            maxReplicas: 5
+            metrics:
+              - type: Resource
+                resource:
+                  name: cpu
+                  target:
+                    averageUtilization: 80
+                    type: Utilization
+          env:
+            - name: WORKLOAD_RSA_KEY_SIZE
+              value: "4096"
+          serviceAnnotations:
+            service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+            service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+            service.beta.kubernetes.io/aws-load-balancer-name: "istio-ingress-private"
+            service.beta.kubernetes.io/aws-load-balancer-scheme: "internal"
+            service.beta.kubernetes.io/aws-load-balancer-subnets: "subnet-12345678"
+            service.beta.kubernetes.io/aws-load-balancer-security-groups: "sg-12345678"
+            service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: "key=value"
+        label:
+          app: istio-ingressgateway
+          istio: ingressgateway
+        name: istio-ingressgateway
+        namespace: istio-system
+      - enabled: true
+        k8s:
+          priorityClassName: istio-priority
+          securityContext:
+            runAsNonRoot: true
+          hpaSpec:
+            minReplicas: 2
+            maxReplicas: 5
+            metrics:
+              - type: Resource
+                resource:
+                  name: cpu
+                  target:
+                    averageUtilization: 80
+                    type: Utilization
+          env:
+            - name: WORKLOAD_RSA_KEY_SIZE
+              value: "4096"
+          serviceAnnotations:
+            service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+            service.beta.kubernetes.io/aws-load-balancer-name: "istio-ingress-public"
+            service.beta.kubernetes.io/aws-load-balancer-subnets: "subnet-87654321"
+            service.beta.kubernetes.io/aws-load-balancer-security-groups: "sg-12345678"
+            service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: "key=value"
+            service.beta.kubernetes.io/aws-load-balancer-eip-allocations: "eipalloc-12345678"
+        label:
+          app: istio-ingressgateway-public
+          istio: ingressgateway-public
+        name: istio-ingressgateway-public
+        namespace: istio-system
+    egressGateways:
+      - enabled: true
+        k8s:
+          priorityClassName: istio-priority
+          securityContext:
+            runAsNonRoot: true
+          hpaSpec:
+            minReplicas: 2
+            maxReplicas: 5
+            metrics:
+              - type: Resource
+                resource:
+                  name: cpu
+                  target:
+                    averageUtilization: 80
+                    type: Utilization
+          env:
+            - name: WORKLOAD_RSA_KEY_SIZE
+              value: "4096"
+        label:
+          app: istio-egressgateway
+          istio: egressgateway
+        name: istio-egressgateway
+        namespace: istio-system
