@@ -1,0 +1,10 @@
+{
+    "source": {
+        "repoURL": "https://helm-charts.komodor.io",
+        "chart": "komoplane",
+        "targetRevision": "0.1.6"
+    },
+    "destination": {
+        "namespace": "komoplane"
+    }
+}

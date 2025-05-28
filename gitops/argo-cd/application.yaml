@@ -1,0 +1,54 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager-helm
+  namespace: argocd
+spec:
+  ignoreDifferences:
+  - group: apps
+    kind: Deployment
+    jsonPointers:
+    - /spec/replicas
+  project: somente-leitura
+  destination:
+    namespace: argocd
+    server: https://kubernetes.default.svc
+  source:
+    chart: cert-manager
+    repoURL: https://charts.jetstack.io
+    targetRevision: v1.13.2
+    helm:
+      valuesObject:
+        fullnameOverride: cert-manager
+        installCRDs: true
+        # resources:
+        #   requests:
+        #     cpu: 75m
+        #     memory: 150Mi
+        #   limits:
+        #     cpu: 75m
+        #     memory: 150Mi
+        podDisruptionBudget:
+          enabled: true
+
+        prometheus:
+          servicemonitor:
+            enabled: false # true
+            labels:
+              prometheus.io/scrap-with: kube-prometheus-stack
+
+        extraArgs:
+          - --logging-format=json
+        webhook:
+          extraArgs:
+            - --logging-format=json
+        cainjector:
+          extraArgs:
+            - --logging-format=json
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true

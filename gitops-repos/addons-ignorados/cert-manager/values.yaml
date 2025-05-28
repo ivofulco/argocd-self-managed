@@ -1,0 +1,82 @@
+fullnameOverride: "cert-manager"
+
+installCRDS: true
+crds:
+  enabled: true
+
+extraArgs:
+  - --logging-format=json
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+topologySpreadConstraints:
+  - maxSkew: 2
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      matchLabels:
+        app.kubernetes.io/instance: cert-manager
+        app.kubernetes.io/name: cert-manager
+  - maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      matchLabels:
+        app.kubernetes.io/instance: cert-manager
+        app.kubernetes.io/name: cert-manager
+
+replicaCount: 2
+
+webhook:
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+
+  extraArgs:
+    - --logging-format=json
+
+  topologySpreadConstraints:
+    - maxSkew: 2
+      topologyKey: topology.kubernetes.io/zone
+      whenUnsatisfiable: ScheduleAnyway
+      labelSelector:
+        matchLabels:
+          app.kubernetes.io/instance: cert-manager
+          app.kubernetes.io/name: webhook
+    - maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: ScheduleAnyway
+      labelSelector:
+        matchLabels:
+          app.kubernetes.io/instance: cert-manager
+          app.kubernetes.io/name: webhook
+
+  replicaCount: 3
+
+cainjector:
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+      
+  extraArgs:
+    - --logging-format=json
+
+  topologySpreadConstraints:
+    - maxSkew: 2
+      topologyKey: topology.kubernetes.io/zone
+      whenUnsatisfiable: ScheduleAnyway
+      labelSelector:
+        matchLabels:
+          app.kubernetes.io/instance: cert-manager
+          app.kubernetes.io/name: cainjector
+    - maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: ScheduleAnyway
+      labelSelector:
+        matchLabels:
+          app.kubernetes.io/instance: cert-manager
+          app.kubernetes.io/name: cainjector
+
+  replicaCount: 2
