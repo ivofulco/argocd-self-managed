@@ -1,3 +1,0 @@
-containerPorts:
-  http: 6660
-  metrics: 6661

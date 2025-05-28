@@ -1,0 +1,10 @@
+{
+    "source": {
+        "repoURL": "https://cert-manager.github.io/aws-privateca-issuer",
+        "chart": "aws-privateca-issuer",
+        "targetRevision": "v1.4.0"
+    },
+    "destination": {
+        "namespace": "cert-manager"
+    }
+}

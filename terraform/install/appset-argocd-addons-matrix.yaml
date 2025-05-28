@@ -1,0 +1,58 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: cluster-addons
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions:
+    - missingkey=error
+  generators:
+    - matrix:
+        generators:
+          - git:
+              repoURL: https://github.com/ivofulco/argocd-self-managed
+              revision: HEAD
+              directories:
+                - path: gitops-repos/cluster-genesis-local-k8s/addons/*
+              pathParamPrefix: addon
+          - git:
+              repoURL: https://github.com/ivofulco/argocd-self-managed
+              revision: HEAD
+              files:
+                - path: "gitops-repos/addons/{{.addon.path.basename}}/*.json"
+              pathParamPrefix: chart
+  template:
+    metadata:
+      name: "{{.addon.path.basename}}"
+      labels:
+        category: addons
+    spec:
+      project: default
+      sources:
+        - repoURL: https://github.com/ivofulco/argocd-self-managed
+          targetRevision: HEAD
+          path: "gitops-repos/cluster-genesis-local-k8s/addons"
+          ref: valuesCluster      
+        - repoURL: https://github.com/ivofulco/argocd-self-managed
+          targetRevision: HEAD
+          path: "gitops-repos/addons"
+          ref: valuesDef
+        - chart: "{{ .source.chart }}"
+          repoURL: "{{ .source.repoURL }}"
+          targetRevision: "{{ .source.targetRevision }}"
+          helm:
+            ignoreMissingValueFiles: true
+            valueFiles:
+              - "$valuesDef/{{.addon.path.basename}}/values.yaml"
+              - "$valuesCluster/{{.addon.path.basename}}/values.yaml"
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "{{ .destination.namespace }}"
+      syncPolicy:
+        automated:
+          prune: false
+          selfHeal: true
+          allowEmpty: false
+        syncOptions:
+          - CreateNamespace=true

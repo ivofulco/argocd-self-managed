@@ -1,0 +1,10 @@
+{
+    "source": {
+        "repoURL": "https://istio-release.storage.googleapis.com/charts",
+        "chart": "base",
+        "targetRevision": "1.17.2"
+    },
+    "destination": {
+        "namespace": "istio-system"
+    }
+}

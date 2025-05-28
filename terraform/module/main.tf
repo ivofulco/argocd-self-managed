@@ -29,10 +29,19 @@ resource "null_resource" "create_appproject" {
   }
 }
 resource "null_resource" "apply_manifests" {
-  depends_on = [null_resource.create_appproject]
+  depends_on = [null_resource.output_secret_admin]
   provisioner "local-exec" {
     command = <<-EOT
          kubectl apply -f ${var.argocd_application_bootstrap_manifest_name} --namespace ${var.namespace}
+     EOT
+  }
+}
+
+resource "null_resource" "apply_manifests_addons" {
+  depends_on = [null_resource.apply_manifests]
+  provisioner "local-exec" {
+    command = <<-EOT
+         kubectl apply -f appset-argocd-addons-matrix.yaml
      EOT
   }
 }
